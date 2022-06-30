@@ -1,22 +1,27 @@
 import React from 'react'
 import { StyleSheet, Text, View, Pressable } from 'react-native'
-import { StackNavigationProp } from "@react-navigation/stack";
 import { useNavigation } from "@react-navigation/native";
 import { RootStackParamList } from '../App'
+import { StackNavigationProp } from '@react-navigation/stack'
 
-type CityResultProp = StackNavigationProp<RootStackParamList, 'CityResult'>;
 //First Page - navigation to forms for either city search or country search.
 
 const FirstPage = () => {
-    const navigation = useNavigation<CityResultProp>();
+    //Typed navigation props
+    type CitySearchProp = StackNavigationProp<RootStackParamList, 'CitySearch'>;
+    type CountrySearchProp = StackNavigationProp<RootStackParamList, 'CitySearch'>;
+   
+    //Navigation hooks
+    const navigationCity = useNavigation<CitySearchProp>();
+    const navigationCountry = useNavigation<CountrySearchProp>();
     
     return (
         <View style={styles.container}>
             <Text style={styles.title}>CityPop</Text>
-            <Pressable style={styles.button} onPress={() => navigation.navigate("CitySearch")}>
+            <Pressable style={styles.button} onPress={() => navigationCity.navigate("CitySearch")}>
                 <Text style={styles.text}>Search city</Text>
             </Pressable>
-            <Pressable style={styles.button} onPress={() => navigation.navigate("CountrySearch")}>
+            <Pressable style={styles.button} onPress={() => navigationCountry.navigate("CountrySearch")}>
                 <Text style={styles.text}>Search country</Text>
             </Pressable>
         </View>
@@ -27,7 +32,10 @@ export default FirstPage
 
 const styles = StyleSheet.create({
     title: {
-        fontSize: 16,
+        position: 'absolute',
+        top: 80,
+        fontSize: 32,
+        fontWeight: 'bold',
     },
     container: {
         flex: 1,
@@ -43,6 +51,7 @@ const styles = StyleSheet.create({
         color: 'white',
       },
     button: {
+        width: 200,
         margin: 10,
         alignItems: 'center',
         justifyContent: 'center',

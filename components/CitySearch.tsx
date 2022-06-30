@@ -1,31 +1,37 @@
 import React, { useState } from 'react'
 import { StyleSheet, Text, View, TextInput, Pressable } from 'react-native'
-import { useAppSelector, useAppDispatch } from '../reduxConfig/hooks'
+import { useAppDispatch } from '../reduxConfig/hooks'
 import { setCityKeyword } from '../reduxConfig/searchSlice';
 import { useNavigation } from "@react-navigation/native";
 import { RootStackParamList } from '../App'
 import { StackNavigationProp } from '@react-navigation/stack'
 
 const CitySearch = () => {
-    //Navigation, typed props to comply to typescript, redux hooks to push and retrieve state between components
+    //Typed navigation props
     type CityResultProp = StackNavigationProp<RootStackParamList, 'CityResult'>;
+    type HomeProp = StackNavigationProp<RootStackParamList, 'Home'>;
+   
+    //Navigation hooks
+    const navigationCity = useNavigation<CityResultProp>();
+    const navigationHome = useNavigation<HomeProp>();
+    
+    //Form hook
     const [city, setCity] = useState('');
-    const navigation = useNavigation<CityResultProp>();
+    
+    //Redux dispatch hook
     const dispatch = useAppDispatch()
     
+    //Search handler, dispatch keyword to redux
     function handleSearch(searchTerm: string) {
-        //Keyword modifying to remove extra whitespaces, make it lowercase, and to replace binding whitespaces with + signs
         let keyword = searchTerm;
         keyword = keyword.trim();
-        keyword = keyword.toLowerCase();
         keyword = keyword.replace(/ /g,'+');
             dispatch(
                     setCityKeyword(keyword)
                   );
-        navigation.navigate("CityResult");
-        }
+            navigationCity.navigate("CityResult");
+    }
     
-
     return (
         <View style={styles.container}>
             <TextInput
@@ -34,8 +40,11 @@ const CitySearch = () => {
             onChangeText={e => setCity(e)}
             style={styles.input}
             />
-            <Pressable style={styles.button} onPress={() => {handleSearch(city)}}>
+            <Pressable style={styles.button} onPress={() =>handleSearch(city)}>
                 <Text style={styles.text}>Search</Text>
+            </Pressable>
+            <Pressable style={styles.back} onPress={() => navigationHome.navigate("Home")}>
+                <Text style={styles.text} >Back</Text>
             </Pressable>
         </View>
     )
@@ -66,6 +75,19 @@ const styles = StyleSheet.create({
         elevation: 3,
         backgroundColor: 'black',
       },
+      back: {
+        position: 'absolute',
+        zIndex: 999,
+        top: 72,
+        left: 24,
+        alignItems: 'center',
+        justifyContent: 'center',
+        paddingVertical: 12,
+        paddingHorizontal: 32,
+        borderRadius: 4,
+        elevation: 3,
+        backgroundColor: 'black',
+      },
     input: {
         color: 'black',
         alignSelf: 'stretch',
@@ -77,6 +99,5 @@ const styles = StyleSheet.create({
         height: 50,
         paddingLeft: 12,
         width: 400,
-
     },
 })

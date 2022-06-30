@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "test-native",
-    "slug": "test-native",
+    "name": "two-native",
+    "slug": "two-native",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",

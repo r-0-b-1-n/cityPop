@@ -1,110 +1,182 @@
-import React from 'react'
-import { Text, StyleSheet, View, Pressable, ActivityIndicator } from 'react-native'
+import React, { useEffect, useState } from 'react'
+import { StyleSheet, Text, View, ActivityIndicator, Pressable } from 'react-native'
 import { useAppSelector } from '../reduxConfig/hooks'
-import { useAppDispatch } from '../reduxConfig/hooks'
-import { setCityKeyword } from '../reduxConfig/searchSlice';
+import { setCityKeyword, setCountryTitle } from '../reduxConfig/searchSlice';
 import { useNavigation } from "@react-navigation/native";
-import { StackNavigationProp } from '@react-navigation/stack'
 import { RootStackParamList } from '../App'
+import { StackNavigationProp } from '@react-navigation/stack'
+import { useAppDispatch } from '../reduxConfig/hooks'
 
-export default class CountryResult extends React.Component<any, any> {
+interface city {
+    country: string,
+    is_capital: boolean,
+    longitude: number,
+    latitude: number,
+    name: string,
+    population: number,
+}
 
+const CountryResult = () => {
+    //Typed navigation props
+    type HomeProp = StackNavigationProp<RootStackParamList, 'Home'>;
+    type CityResultProp = StackNavigationProp<RootStackParamList, 'CityResult'>;
+
+    //Navigation hooks
+    const navigationHome = useNavigation<HomeProp>();
+    const navigationCity = useNavigation<CityResultProp>();
+
+    //API hook
+    const [CountryResult, setCountryResult] = useState<city[]>([]);
+    
+    //Delay hook, loading screen
+    const [delay, setDelay] = useState<boolean>(true);
     
 
-    constructor(props: any) {
-        super(props);
-        this.state = {
-            isLoading: true,
-            dataSource: [],
-        }
+    //Redux keyword selectors
+    const selectCountry = useAppSelector(state => state.search.countryKeyword)
+    const selectTitle = useAppSelector(state => state.search.countryTitle)
+    
+    //Redux dispatch hook
+    const dispatch = useAppDispatch()
 
-    }
-
-    handleClick = (city: string) => {
-        const dispatch = useAppDispatch();
-        const navigation = useNavigation<CityResultProp>();
-        type CityResultProp = StackNavigationProp<RootStackParamList, 'CityResult'>;
-        let keyword = city;
+    //Time function to get loading feature
+    setTimeout(() => {
+        setDelay(false);
+      }, 2500);
+    
+    // Click handler, showing city population 
+    function handleClick(searchTerm: string) {
+        let keyword = searchTerm;
         keyword = keyword.trim();
-        keyword = keyword.toLowerCase();
         keyword = keyword.replace(/ /g,'+');
             dispatch(
                     setCityKeyword(keyword)
                   );
-        navigation.navigate("CityResult");
-
+            navigationCity.navigate("CityResult");
     }
 
-    componentDidMount() {
-        const keyword = useAppSelector((state) => state.search.cityKeyword)
-        const searchTermCountry = keyword;
-        const endpoint = `https://api.api-ninjas.com/v1/city?country=${searchTermCountry}&limit=5` ;
-            return fetch(endpoint, {
-                method: "GET",
-                headers: { 'X-Api-Key': 'QCzDb8zHUhWDBVrzF8KrPA==0tjQVXhLVDEJ8NZl'},
-                })
-                .then(response => response.json()) 
-                .then( (responseJson) => {
-                    console.log(responseJson)
-                    this.setState({
-                        isLoading: false,
-                        dataSource: responseJson,
-                })
-                    console.log(this.state.dataSource)
-                })
-        
+    const handleBack = () => {
+            dispatch(
+                    setCountryTitle('')
+                  );
+            navigationHome.navigate("Home");
     }
 
-    render() {
-        if(this.state.loading == false ) {
-            return (
-                <View style={styles.container}>
-                    <View style={styles.li}>
-                        <ActivityIndicator />
-                    </View>
-                </View>
-                )
-        }
-        else if(this.state.dataSource.length == 0) {
-            return (
+    const getRequest = async () => {
+            let searchTermCountry = selectCountry;
+            let endpoint = `https://api.api-ninjas.com/v1/city?country=${searchTermCountry}&&limit=5`;
+            
+            let r = await fetch(endpoint, {
+            method: "GET",
+            headers: { 'X-Api-Key': 'QCzDb8zHUhWDBVrzF8KrPA==0tjQVXhLVDEJ8NZl'},
+            });
+            let result = await r.json();
+            setCountryResult(result);
+            console.log(result)
+    }
+
+    useEffect(() => {
+        getRequest();
+    }, []);
+    
+    return (
+        <View style={styles.body}>
+            { delay ? null: (
+                <Pressable style={styles.button} onPress={() => handleBack()}>
+                    <Text style={styles.text}>Back</Text>
+                </Pressable>
+            )}
+            {delay ? null : (<Text style={styles.title}>{selectTitle.length > 0 ? selectTitle: "" }</Text>)}
             <View style={styles.container}>
-                <View style={styles.li}>
-                    <Text>Unfortunately, no cities was found</Text>
-                </View>
+                { CountryResult.length === 0 ?  
+                    (
+                    <View style={styles.container}>
+                        <View style={styles.li}>
+                        { delay ? <ActivityIndicator /> : <Text>Unfortunately, no cities were found</Text> }
+                        </View>
+                        
+                    </View>
+                    ) : CountryResult.length >= 1 ? 
+                    (
+                        <View style={styles.container}>
+                            { delay ? (<ActivityIndicator />) : (
+                                CountryResult.map((item: any, key: React.Key | null | undefined) => (
+                                    <Pressable key={key} style={styles.li} onPress={() => handleClick(item.name)}>
+                                        <Text>{item.name}</Text>
+                                    </Pressable>
+                                )))
+                                
+                            }
+                        </View>
+                    ) : (
+                    <View style={styles.container}>
+                        <View style={styles.li}>
+                        { delay ? <ActivityIndicator /> : <Text>Error, something unexpected happened. </Text>}
+                        </View>
+                    </View>
+                    )
+                    
+                }
             </View>
-            )
-        }
-        else {
-            let cities = this.state.dataSource.map((item: any, key: React.Key | null | undefined) => {
-                return <Pressable key={key} style={styles.li} onPress={() => {this.handleClick(item.name)}}>
-                            <Text>{item.name}</Text>
-                    </Pressable>
-            })
-            return (
-                <View style={styles.container}>
-                    {cities}
-                </View>
-            );
-        }
-    }   
+        </View>
+    );   
 }
+    // Conditional chain based on Request result last is because an empty keyword returns an error, delay state wrapped in option chain to enable loading screen
 
-
+export default CountryResult
 
 const styles = StyleSheet.create({
+    body: {
+        height: '100%',
+    },
     container: {
-        flex: 1,
         backgroundColor: '#fff',
         alignItems: 'center',
         justifyContent: 'center',
+        zIndex: 1,
+        minHeight: '100%',
+    },
+    title: {
+        textAlign: 'center',
+        top: 170,
+        left: 0,
+        right: 0,
+        fontSize: 32,
+        fontWeight: 'bold',
+        color: 'black',
+        zIndex: 997,
     },
     li: {
-        flex: 1,
+        height: 60,
+        width: 400,
+        borderColor: 'black',
+        borderWidth: 2,
         color: 'black',
         alignSelf: 'stretch',
-        margin: 10,
+        margin: 20,
         alignItems: 'center',
         justifyContent: 'center',
 
-    }
+    },
+    text: {
+        fontSize: 16,
+        lineHeight: 21,
+        fontWeight: 'bold',
+        letterSpacing: 0.25,
+        color: 'white',
+      },
+    button: {
+        marginTop: 20,
+        position: 'absolute',
+        zIndex: 999,
+        top: 50,
+        left: 20,
+        alignItems: 'center',
+        justifyContent: 'center',
+        paddingVertical: 12,
+        paddingHorizontal: 32,
+        borderRadius: 4,
+        elevation: 3,
+        backgroundColor: 'black',
+      },
 })

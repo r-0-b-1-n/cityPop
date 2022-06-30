@@ -4,9 +4,9 @@ import { Provider } from "react-redux";
 import { store } from "./reduxConfig/store";
 import FirstPage from './components/FirstPage'
 import CitySearch from './components/CitySearch';
-import CityResult from './components/CityResult';
 import CountryResult from './components/CountryResult';
 import CountrySearch from './components/CountrySearch';
+import CityResult from './components/CityResult';
 
 //Typing for stack navigator in compliance with Typescript
 export type RootStackParamList = {
@@ -30,23 +30,38 @@ export default function App() {
               <Stack.Screen
                 name="Home"
                 component={FirstPage}
+                options={{
+                  headerShown: false,
+                }}
               />
               <Stack.Screen
                 name="CitySearch"
                 component={CitySearch}
+                options={{
+                  headerShown: false,
+                }}
               />
               <Stack.Screen
                 name="CountrySearch"
                 component={CountrySearch}
+                options={{
+                  headerShown: false,
+                }}
               />
               <Stack.Screen
                 name="CountryResult"
                 component={CountryResult}
+                options={{
+                  headerShown: false,
+                }}
               />
 
               <Stack.Screen
                 name="CityResult"
                 component={CityResult}
+                options={{
+                  headerShown: false,
+                }}
               />
             </Stack.Navigator>
       </NavigationContainer>
