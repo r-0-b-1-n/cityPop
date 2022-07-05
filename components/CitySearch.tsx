@@ -40,7 +40,8 @@ const CitySearch = () => {
             onChangeText={e => setCity(e)}
             style={styles.input}
             />
-            <Pressable style={styles.button} onPress={() =>handleSearch(city)}>
+            
+            <Pressable style={styles.button} onPress={() => {city ? handleSearch(city): null}}>
                 <Text style={styles.text}>Search</Text>
             </Pressable>
             <Pressable style={styles.back} onPress={() => navigationHome.navigate("Home")}>

@@ -8,7 +8,7 @@ export const countryCode: countryMap = {
     "united states of america" : "US",
     "andorra" : "AD",
     "united arab emirates" : "AE",
-    "UAE" : "AE",
+    "uae" : "AE",
     "afghanistan" : "AF",
     "antigua and barbuda" : "AG",
     "anguilla" : "AI",

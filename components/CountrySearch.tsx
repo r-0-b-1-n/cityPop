@@ -56,7 +56,7 @@ const CountrySearch = () => {
             onChangeText={e => setCountry(e)}
             style={styles.input}
             />
-            <Pressable style={styles.button} onPress={() => {handleSearch(country)}}>
+            <Pressable style={styles.button} onPress={() => {country ? handleSearch(country): null}}>
                 <Text style={styles.text}>Search</Text>
             </Pressable>
             <Pressable style={styles.back} onPress={() => navigationHome.navigate("Home")}>

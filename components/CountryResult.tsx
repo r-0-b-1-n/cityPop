@@ -42,7 +42,7 @@ const CountryResult = () => {
     //Time function to get loading feature
     setTimeout(() => {
         setDelay(false);
-      }, 2500);
+      }, 1500);
     
     // Click handler, showing city population 
     function handleClick(searchTerm: string) {
@@ -92,9 +92,8 @@ const CountryResult = () => {
                     (
                     <View style={styles.container}>
                         <View style={styles.li}>
-                        { delay ? <ActivityIndicator /> : <Text>Unfortunately, no cities were found</Text> }
-                        </View>
-                        
+                        { delay ? <ActivityIndicator /> : <Text>Unfortunately, no countries were found</Text> }
+                        </View> 
                     </View>
                     ) : CountryResult.length >= 1 ? 
                     (
@@ -108,14 +107,13 @@ const CountryResult = () => {
                                 
                             }
                         </View>
-                    ) : (
+                    ) : ( 
                     <View style={styles.container}>
                         <View style={styles.li}>
                         { delay ? <ActivityIndicator /> : <Text>Error, something unexpected happened. </Text>}
                         </View>
                     </View>
-                    )
-                    
+                    )  
                 }
             </View>
         </View>

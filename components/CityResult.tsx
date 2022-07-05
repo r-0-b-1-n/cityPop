@@ -5,7 +5,6 @@ import { useNavigation } from "@react-navigation/native";
 import { RootStackParamList } from '../App'
 import { StackNavigationProp } from '@react-navigation/stack'
 
-//Typed API array
 interface city {
     country: string,
     is_capital: boolean,
@@ -35,7 +34,7 @@ const CityResult = () => {
     //Time function to get loading feature
     setTimeout(() => {
         setDelay(false);
-      }, 2500);
+      }, 1500);
 
     const getRequest = async () => {
             let searchTermCity = selectCity
@@ -85,7 +84,7 @@ const CityResult = () => {
                     ) : (
                     <View style={styles.container}>
                         <View style={styles.li}>
-                        { delay ? <ActivityIndicator /> : <Text>Error, something unexpected happened. </Text>}
+                        { delay ? <ActivityIndicator /> : <Text>Error, something unexpected happened. </Text> }
                         </View>
                     </View>
                     )
